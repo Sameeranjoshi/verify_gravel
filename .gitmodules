@@ -1,3 +1,6 @@
 [submodule "LC-framework"]
 	path = LC-framework
 	url = https://github.com/burtscher/LC-framework.git
+[submodule "bricklib"]
+	path = bricklib
+	url = https://github.com/Sameeranjoshi/bricklib.git
