@@ -10,8 +10,8 @@ def build_bricklib():
         # Code within this block will run with the changed working directory
         # ml gcc/11.2.0 openmpi cuda \
         commands = """
-        mkdir build/ \
-        && mkdir install/ \
+        mkdir build/ -p \
+        && mkdir install/ -p \
         && cd build/ \
         && cmake ../ -DCMAKE_INSTALL_PREFIX=../install \
         && make \
