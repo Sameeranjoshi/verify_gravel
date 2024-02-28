@@ -3,22 +3,24 @@ import re
 import subprocess
 
 # return true/false depending on built success
-def build_bricklib():
+def build_bricklib(brickliblocation):
     try:
     # Change to the desired directory within a context manager
-        os.chdir('../bricklib/')
+        os.chdir(brickliblocation)
         # Code within this block will run with the changed working directory
-        # ml gcc/11.2.0 openmpi cuda \
         commands = """
-        mkdir build/ -p \
+        ml gcc/11.2.0 openmpi cuda \
+        && mkdir build/ -p \
         && mkdir install/ -p \
         && cd build/ \
         && cmake ../ -DCMAKE_INSTALL_PREFIX=../install \
-        && make \
+        && make -j12 \
         && make install -j12
         """
+        print("Running Command")
+        print (commands)    
         subprocess.run(commands, shell=True, check=True)
-        os.chdir('../')
+        # os.chdir('../')
         # All commands executed successfully
         return True
     except subprocess.CalledProcessError:
@@ -26,13 +28,27 @@ def build_bricklib():
         return False
 
 # return true/false depending on built success
-def build_crusher():
-    pass
+def build_crusher(crusherlocation):
+    print("Changing directory OLD: ", os.getcwd())
+    # relative path
+    os.chdir(os.path.expanduser(crusherlocation))    
+    print("NEW:", os.getcwd())
+    commands = """
+    ./generate_Host_LC-Framework.py \
+    && g++ -O3 -march=native -fopenmp -DUSE_CPU -I. -std=c++17 -o lc lc.cpp
+    """
+    try:
+        print("Running commands ")
+        print (commands)
+        subprocess.run(commands, shell=True, check=True)
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 def run():
     # List of executable files
-    FILES = ('cpu', 'cuda', 'mpi')
-    FOLDERS = ('single', 'strong', 'weak')
+    FILES = ('cpu', ) #, 'cuda')
+    FOLDERS = ('single', )#, 'strong', 'weak')
 
     # Define a regular expression pattern to match the desired output
     output_pattern = re.compile(r'Overall best.*?(?=Overall best|\Z)', re.DOTALL)
@@ -41,13 +57,14 @@ def run():
     output_file_path = 'output.txt'
 
     # Open the output file for writing
-    with open(output_file_path, 'w') as output_file:
+    with open(output_file_path, 'a') as output_file:
         # Iterate over each executable file and folder combination
         for eachexe in FILES:
             for eachfolder in FOLDERS:
                 # Command to run for each executable
                 command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" ".+"'
-
+                print ("running command")
+                print(command)
                 # Run the command and capture its output
                 output = os.popen(command).read()
 
@@ -68,13 +85,13 @@ def run():
 
 def main():
     print("Building BrickLib")
-    if (build_bricklib()):
-        print("Built BrickLib success")
+    if (build_bricklib('../bricklib')):
+        print("Building BrickLib success")
         print("Building CRUSHER")
-        # if (build_crusher()):
-        #     print("Built CRUSHER success")
-        #     # Built both libraries success
-        #     run()
+        if (build_crusher('../LC-framework')):
+            print("Built CRUSHER success")
+            #Built both libraries success
+            run()
 
 
 
