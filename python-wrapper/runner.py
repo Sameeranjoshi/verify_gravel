@@ -8,8 +8,9 @@ def build_bricklib(brickliblocation):
     # Change to the desired directory within a context manager
         os.chdir(brickliblocation)
         # Code within this block will run with the changed working directory
+        # dict error  = python missing
         commands = """
-        ml gcc/11.2.0 openmpi cuda \
+        ml gcc/11.2.0 openmpi cuda python/3.11.7 \
         && mkdir build/ -p \
         && mkdir install/ -p \
         && cd build/ \
@@ -92,15 +93,17 @@ def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preproces
                      ORIGINAL_INPUT,                # original file to compress, full path
                      COMPRESSED_INPUT,              # file name after compression, an intermediate file
                      CDC_INPUT):                    # File name after compression-decompression step
-    
+    current_directory = os.path.dirname(os.path.realpath(__file__))
     commands = [
         ['./generate_standalone_CPU_compressor_decompressor.py', f'"{BEST_CHOOSEN_PREPROCESSOR}"', f'"{BEST_CHOOSEN_COMPONENT}"'],
         ['g++', '-O3', '-march=native', '-fopenmp', '-mno-fma', '-I.', '-std=c++17', '-o', 'compress', 'compressor-standalone.cpp'],
         ['g++', '-O3', '-march=native', '-fopenmp', '-mno-fma', '-I.', '-std=c++17', '-o', 'decompress', 'decompressor-standalone.cpp'],
-        ['./compress', f'"{ORIGINAL_INPUT}"', f'"{COMPRESSED_INPUT}"', 'y'],
-        ['./decompress', f'"{COMPRESSED_INPUT}"', f'"{CDC_INPUT}"', 'y']
+        ['./compress', f'{ORIGINAL_INPUT}', f'{current_directory}/{COMPRESSED_INPUT}', 'y'],
+        ['./decompress', f'{current_directory}/{COMPRESSED_INPUT}', f'{current_directory}/{CDC_INPUT}', 'y'],
+        ['cp', f'{ORIGINAL_INPUT}', '.'],
+        ['chmod', '777', f'{current_directory}/{CDC_INPUT}']
     ]
-
+    print(" Current directory : ", os.getcwd())
     # Run the commands sequentially
     for cmd in commands:
         try:
@@ -136,7 +139,7 @@ def run_gravel(crusherlocation):
                 BEST_CHOOSEN_PREPROCESSOR=""
                 BEST_CHOOSEN_COMPONENT="RZE_1 CLOG_1"
                 #TODO: THIS SHOULD BE FROM install/
-                ORIGINAL_INPUT="../verify_gravel/bricklib/build/{eachfolder}/{eachexe}"
+                ORIGINAL_INPUT=f"../bricklib/build/{eachfolder}/{eachexe}"
                 COMPRESSED_INPUT="compressed_cpu"
                 CDC_INPUT="cdc_cpu"
                 
@@ -145,13 +148,13 @@ def run_gravel(crusherlocation):
 
 
 def main():
-    print("Building BrickLib")
-    if (build_bricklib('../bricklib')):
-        print("Building BrickLib success")
-        print("Building CRUSHER")
-        if (build_crusher('../LC-framework')):
-            print("Built CRUSHER success")
-            #Built both libraries success
+    #print("Building BrickLib")
+    #if (build_bricklib('../bricklib')):
+    #    print("Building BrickLib success")
+    #    print("Building CRUSHER")
+    #    if (build_crusher('../LC-framework')):
+    #        print("Built CRUSHER success")
+    #        #Built both libraries success
             run_gravel('../LC-framework')
 
 if __name__ == "__main__":
