@@ -19,7 +19,7 @@ def build_bricklib(brickliblocation):
         """
         print("Running Command")
         print (commands)    
-        subprocess.run(commands, shell=True, check=True)
+        subprocess.run(commands, shell=True, check=True,  stdout=subprocess.PIPE)
         # os.chdir('../')
         # All commands executed successfully
         return True
@@ -40,11 +40,12 @@ def build_crusher(crusherlocation):
     try:
         print("Running commands ")
         print (commands)
-        subprocess.run(commands, shell=True, check=True)
+        subprocess.run(commands, shell=True, check=True,  stdout=subprocess.PIPE)
         return True
     except subprocess.CalledProcessError:
         return False
 
+#depricated
 def run():
     # List of executable files
     FILES = ('cpu', ) #, 'cuda')
@@ -62,18 +63,22 @@ def run():
         for eachexe in FILES:
             for eachfolder in FOLDERS:
                 # Command to run for each executable
-                command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" ".+"'
+                # Generic command - to move to compressor and decompressor choose some fixed algorithms.
+                # command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" ".+ .+"'
+
+                # This gives the best performance for now, choose this set to begin.
+                command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" "RZE_1 CLOG_1"'
                 print ("running command")
                 print(command)
                 # Run the command and capture its output
                 output = os.popen(command).read()
 
-                # Find matches using the regular expression pattern
+                # You can use this when you are using heuristics to find the best schedule.
                 matches = output_pattern.findall(output)
 
                 # Write the matched parts of the output to the file
                 if matches:
-                    output_file.write(f"Output for {eachexe} in {eachfolder}:\n")
+                    output_file.write(f"Output for '{eachfolder}/{eachexe}':\n")
                     for match in matches:
                         output_file.write(match.strip() + '\n')
                 else:
@@ -81,6 +86,62 @@ def run():
 
     # Print a message indicating that the output has been written to the file
     print(f"Output has been written to {output_file_path}")
+
+def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preprocessor I can choose for this computation
+                     BEST_CHOOSEN_COMPONENT,        # Best component for this computation
+                     ORIGINAL_INPUT,                # original file to compress, full path
+                     COMPRESSED_INPUT,              # file name after compression, an intermediate file
+                     CDC_INPUT):                    # File name after compression-decompression step
+    
+    commands = [
+        ['./generate_standalone_CPU_compressor_decompressor.py', f'"{BEST_CHOOSEN_PREPROCESSOR}"', f'"{BEST_CHOOSEN_COMPONENT}"'],
+        ['g++', '-O3', '-march=native', '-fopenmp', '-mno-fma', '-I.', '-std=c++17', '-o', 'compress', 'compressor-standalone.cpp'],
+        ['g++', '-O3', '-march=native', '-fopenmp', '-mno-fma', '-I.', '-std=c++17', '-o', 'decompress', 'decompressor-standalone.cpp'],
+        ['./compress', f'"{ORIGINAL_INPUT}"', f'"{COMPRESSED_INPUT}"', 'y'],
+        ['./decompress', f'"{COMPRESSED_INPUT}"', f'"{CDC_INPUT}"', 'y']
+    ]
+
+    # Run the commands sequentially
+    for cmd in commands:
+        try:
+            # Run the command
+            print (cmd)
+            subprocess.run(cmd, check=True, stdout=subprocess.PIPE)
+        except subprocess.CalledProcessError as e:
+            # If the command fails, print an error message
+            print(f"Command '{' '.join(cmd)}' failed with exit code {e.returncode}")
+            break
+    else:
+        # All commands executed successfully
+        print("All commands executed successfully")
+
+def run_gravel(crusherlocation):
+    # List of executable files
+    FILES = ('cpu', ) #, 'cuda')
+    FOLDERS = ('single', )#, 'strong', 'weak')
+
+    # Output file path
+    output_file_path = 'output.txt'
+
+    os.chdir(os.path.expanduser(crusherlocation))
+
+
+    # Open the output file for writing
+    with open(output_file_path, 'a') as output_file:
+        # Iterate over each executable file and folder combination
+        for eachexe in FILES:
+            for eachfolder in FOLDERS:                
+                # command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" "RZE_1 CLOG_1"'
+                # This gives the best performance for now, choose this set to begin.
+                BEST_CHOOSEN_PREPROCESSOR=""
+                BEST_CHOOSEN_COMPONENT="RZE_1 CLOG_1"
+                #TODO: THIS SHOULD BE FROM install/
+                ORIGINAL_INPUT="../verify_gravel/bricklib/build/{eachfolder}/{eachexe}"
+                COMPRESSED_INPUT="compressed_cpu"
+                CDC_INPUT="cdc_cpu"
+                
+                run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR, BEST_CHOOSEN_COMPONENT, ORIGINAL_INPUT, COMPRESSED_INPUT, CDC_INPUT)
+
 
 
 def main():
@@ -91,9 +152,7 @@ def main():
         if (build_crusher('../LC-framework')):
             print("Built CRUSHER success")
             #Built both libraries success
-            run()
-
-
+            run_gravel('../LC-framework')
 
 if __name__ == "__main__":
     # Call the main function
