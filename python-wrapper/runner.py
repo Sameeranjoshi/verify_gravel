@@ -46,48 +46,7 @@ def build_crusher(crusherlocation):
     except subprocess.CalledProcessError:
         return False
 
-#depricated
-def run():
-    # List of executable files
-    FILES = ('cpu', ) #, 'cuda')
-    FOLDERS = ('single', )#, 'strong', 'weak')
-
-    # Define a regular expression pattern to match the desired output
-    output_pattern = re.compile(r'Overall best.*?(?=Overall best|\Z)', re.DOTALL)
-
-    # Output file path
-    output_file_path = 'output.txt'
-
-    # Open the output file for writing
-    with open(output_file_path, 'a') as output_file:
-        # Iterate over each executable file and folder combination
-        for eachexe in FILES:
-            for eachfolder in FOLDERS:
-                # Command to run for each executable
-                # Generic command - to move to compressor and decompressor choose some fixed algorithms.
-                # command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" ".+ .+"'
-
-                # This gives the best performance for now, choose this set to begin.
-                command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" "RZE_1 CLOG_1"'
-                print ("running command")
-                print(command)
-                # Run the command and capture its output
-                output = os.popen(command).read()
-
-                # You can use this when you are using heuristics to find the best schedule.
-                matches = output_pattern.findall(output)
-
-                # Write the matched parts of the output to the file
-                if matches:
-                    output_file.write(f"Output for '{eachfolder}/{eachexe}':\n")
-                    for match in matches:
-                        output_file.write(match.strip() + '\n')
-                else:
-                    output_file.write(f"No output found for {eachexe} in {eachfolder}\n")
-
-    # Print a message indicating that the output has been written to the file
-    print(f"Output has been written to {output_file_path}")
-
+# Creates a configuration, Runs the compression followed by decompression.
 def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preprocessor I can choose for this computation
                      BEST_CHOOSEN_COMPONENT,        # Best component for this computation
                      ORIGINAL_INPUT,                # original file to compress, full path
@@ -100,8 +59,9 @@ def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preproces
         ['g++', '-O3', '-march=native', '-fopenmp', '-mno-fma', '-I.', '-std=c++17', '-o', 'decompress', 'decompressor-standalone.cpp'],
         ['./compress', f'{ORIGINAL_INPUT}', f'{current_directory}/{COMPRESSED_INPUT}', 'y'],
         ['./decompress', f'{current_directory}/{COMPRESSED_INPUT}', f'{current_directory}/{CDC_INPUT}', 'y'],
-        ['cp', f'{ORIGINAL_INPUT}', '.'],
-        ['chmod', '777', f'{current_directory}/{CDC_INPUT}']
+        ['cp', f'{ORIGINAL_INPUT}', f'{current_directory}'],
+        ['chmod', '777', f'{current_directory}/{CDC_INPUT}'],
+        [f'{current_directory}/{CDC_INPUT}']
     ]
     print(" Current directory : ", os.getcwd())
     # Run the commands sequentially
@@ -118,16 +78,15 @@ def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preproces
         # All commands executed successfully
         print("All commands executed successfully")
 
+# Runs compression-decompression on each input executable.
 def run_gravel(crusherlocation):
     # List of executable files
     FILES = ('cpu', ) #, 'cuda')
     FOLDERS = ('single', )#, 'strong', 'weak')
-
     # Output file path
     output_file_path = 'output.txt'
 
     os.chdir(os.path.expanduser(crusherlocation))
-
 
     # Open the output file for writing
     with open(output_file_path, 'a') as output_file:
@@ -137,7 +96,7 @@ def run_gravel(crusherlocation):
                 # command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" "RZE_1 CLOG_1"'
                 # This gives the best performance for now, choose this set to begin.
                 BEST_CHOOSEN_PREPROCESSOR=""
-                BEST_CHOOSEN_COMPONENT="RZE_1 CLOG_1"
+                BEST_CHOOSEN_COMPONENT="RZE_1 CLOG_1"   # temporary value
                 #TODO: THIS SHOULD BE FROM install/
                 ORIGINAL_INPUT=f"../bricklib/build/{eachfolder}/{eachexe}"
                 COMPRESSED_INPUT="compressed_cpu"
@@ -145,8 +104,8 @@ def run_gravel(crusherlocation):
                 
                 run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR, BEST_CHOOSEN_COMPONENT, ORIGINAL_INPUT, COMPRESSED_INPUT, CDC_INPUT)
 
-
-
+# E2E workflow
+# Build both tools followed by CDC pipeline.
 def main():
     print("Building BrickLib")
     if (build_bricklib('../bricklib')):
