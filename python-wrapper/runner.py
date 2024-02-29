@@ -148,13 +148,13 @@ def run_gravel(crusherlocation):
 
 
 def main():
-    #print("Building BrickLib")
-    #if (build_bricklib('../bricklib')):
-    #    print("Building BrickLib success")
-    #    print("Building CRUSHER")
-    #    if (build_crusher('../LC-framework')):
-    #        print("Built CRUSHER success")
-    #        #Built both libraries success
+    print("Building BrickLib")
+    if (build_bricklib('../bricklib')):
+        print("Building BrickLib success")
+        print("Building CRUSHER")
+        if (build_crusher('../LC-framework')):
+            print("Built CRUSHER success")
+            print("Running Python Wrapper")
             run_gravel('../LC-framework')
 
 if __name__ == "__main__":
