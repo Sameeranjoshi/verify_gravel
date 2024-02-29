@@ -54,3 +54,31 @@ Bri: 2.08803
 Trans: 0.345705
 result match
 sameeran@sameeran:/tmp/LC-framework$ 
+
+
+
+___CUDA___
+
+[u1418973@kp361:python-wrapper]$ ./cdc_cuda 
+d3pt7
+Arr: 0.00131369
+Arr warp: 0.00147973
+Arr scatter: 0.00143935
+Bri: 0.001554
+Trans: 0.000657605
+d3cond
+Arr: 0.00131386
+Bri: 0.0016292
+Trans: 0.000665005
+[u1418973@kp361:python-wrapper]$ ./cuda
+d3pt7
+Arr: 0.00121909
+Arr warp: 0.00147551
+Arr scatter: 0.00143916
+Bri: 0.0015535
+Trans: 0.000658018
+d3cond
+Arr: 0.00121775
+Bri: 0.00162328
+Trans: 0.000665201
+[u1418973@kp361:python-wrapper]$ 
