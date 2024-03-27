@@ -1,6 +1,18 @@
 {
     "files.associations": {
         "ostream": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "atomic": "cpp",
+        "*.tcc": "cpp",
+        "cmath": "cpp",
+        "unordered_map": "cpp",
+        "random": "cpp",
+        "limits": "cpp",
+        "functional": "cpp",
+        "regex": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "bitset": "cpp",
+        "optional": "cpp"
     }
 }
