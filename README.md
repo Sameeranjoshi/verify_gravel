@@ -9,3 +9,6 @@ git clone --recursive -j8 https://github.com/Sameeranjoshi/verify_gravel.git
 
 If cloned
 git submodule update --init --recursive
+
+
+ml gcc/11.2.0 openmpi cuda python3.11.7
