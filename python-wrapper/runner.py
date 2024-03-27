@@ -59,16 +59,17 @@ def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preproces
         ['g++', '-O3', '-march=native', '-fopenmp', '-mno-fma', '-I.', '-std=c++17', '-o', 'decompress', 'decompressor-standalone.cpp'],
         ['./compress', f'{ORIGINAL_INPUT}', f'{current_directory}/{COMPRESSED_INPUT}', 'y'],
         ['./decompress', f'{current_directory}/{COMPRESSED_INPUT}', f'{current_directory}/{CDC_INPUT}', 'y'],
-        ['cp', f'{ORIGINAL_INPUT}', f'{current_directory}'],
-        ['chmod', '777', f'{current_directory}/{CDC_INPUT}'],
-        [f'{current_directory}/{CDC_INPUT}']
+        # ['cp', f'{ORIGINAL_INPUT}', f'{current_directory}'],
+        # ['chmod', '777', f'{current_directory}/{CDC_INPUT}'],
+        # [f'{current_directory}/{CDC_INPUT}']
     ]
     print(" Current directory : ", os.getcwd())
     # Run the commands sequentially
     for cmd in commands:
         try:
             # Run the command
-            print (cmd)
+            # print (cmd)
+            print(" ".join(cmd))
             subprocess.run(cmd, check=True, stdout=subprocess.PIPE)
         except subprocess.CalledProcessError as e:
             # If the command fails, print an error message
@@ -81,7 +82,7 @@ def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preproces
 # Runs compression-decompression on each input executable.
 def run_gravel(crusherlocation):
     # List of executable files
-    FILES = ('cpu', ) #, 'cuda')
+    FILES = ('grid_contents.txt', "coefficients.txt", "output_grid_data_dmp.txt", ) #, 'cuda')
     FOLDERS = ('single', )#, 'strong', 'weak')
     # Output file path
     output_file_path = 'output.txt'
@@ -99,22 +100,22 @@ def run_gravel(crusherlocation):
                 BEST_CHOOSEN_COMPONENT="RZE_1 CLOG_1"   # temporary value
                 #TODO: THIS SHOULD BE FROM install/
                 ORIGINAL_INPUT=f"../bricklib/build/{eachfolder}/{eachexe}"
-                COMPRESSED_INPUT="compressed_cpu"
-                CDC_INPUT="cdc_cpu"
-                
+                COMPRESSED_INPUT=f"compressed_{eachexe}"
+                CDC_INPUT=f"cdc_{eachexe}"
+                # print(BEST_CHOOSEN_PREPROCESSOR,BEST_CHOOSEN_COMPONENT, ORIGINAL_INPUT, COMPRESSED_INPUT, CDC_INPUT)
                 run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR, BEST_CHOOSEN_COMPONENT, ORIGINAL_INPUT, COMPRESSED_INPUT, CDC_INPUT)
 
 # E2E workflow
 # Build both tools followed by CDC pipeline.
 def main():
-    print("Building BrickLib")
-    if (build_bricklib('../bricklib')):
-        print("Building BrickLib success")
-        print("Building CRUSHER")
-        if (build_crusher('../LC-framework')):
-            print("Built CRUSHER success")
-            print("Running Python Wrapper")
-            run_gravel('../LC-framework')
+    # print("Building BrickLib")
+    # if (build_bricklib('../bricklib')):
+    #     print("Building BrickLib success")
+    #     print("Building CRUSHER")
+    #     if (build_crusher('../LC-framework')):
+    #         print("Built CRUSHER success")
+    #         print("Running Python Wrapper")
+    run_gravel('../LC-framework')
 
 if __name__ == "__main__":
     # Call the main function
