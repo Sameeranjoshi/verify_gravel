@@ -69,6 +69,11 @@
         "locale": "cpp",
         "queue": "cpp",
         "stack": "cpp",
-        "cstdbool": "cpp"
+        "cstdbool": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }
