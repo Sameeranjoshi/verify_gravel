@@ -5,7 +5,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bricklib/build/single/cpu",
+            "program": "${workspaceFolder}/bricklib/examples/external/build/example",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
