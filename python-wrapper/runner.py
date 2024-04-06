@@ -116,7 +116,7 @@ def run_gravel(crusherlocation, coeff_original, brick_original):
                 # This gives the best performance for now, choose this set to begin.
                 #QUANT_ABS_R_f64(0.000001)" "NUL RZE_4
 
-                BEST_CHOOSEN_PREPROCESSOR="QUANT_ABS_R_f64(0.000001)"
+                BEST_CHOOSEN_PREPROCESSOR="QUANT_ABS_0_f64(0.000001)"
                 BEST_CHOOSEN_COMPONENT="RZE_4"   # temporary value
                 #TODO: THIS SHOULD BE FROM install/
                 ORIGINAL_INPUT=f"{eachfolder}/{eachexe}"
