@@ -47,6 +47,8 @@ def build_crusher(crusherlocation):
     except subprocess.CalledProcessError:
         return False
 
+# ./lc ../bricklib/coeff_original.txt CR "QUANT_ABS_0_f32(0.00000001)" ".+ .+ .+"
+
 # Creates a configuration, Runs the compression followed by decompression.
 def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preprocessor I can choose for this computation
                      BEST_CHOOSEN_COMPONENT,        # Best component for this computation
@@ -55,6 +57,9 @@ def run_CDC_pipeline(BEST_CHOOSEN_PREPROCESSOR,     # What is the best preproces
                      CDC_INPUT):                    # File name after compression-decompression step
     current_directory = os.path.dirname(os.path.realpath(__file__))
     output_file_location = "../bricklib/"
+    # ./lc brick_original.txt CR "QUANT_ABS_R_f32(0.000001)" "NUL RZE_4"
+    # ./lc brick_original.txt CR "QUANT_ABS_R_f64(0.000001)" "NUL RZE_4"
+    # ./lc brick_original.txt CR "QUANT_ABS_0_f64(0.000001)" "NUL RZE_4"
     commands = [
         ['./generate_standalone_CPU_compressor_decompressor.py', f'"{BEST_CHOOSEN_PREPROCESSOR}"', f'"{BEST_CHOOSEN_COMPONENT}"'],
         ['g++', '-O3', '-march=native', '-fopenmp', '-mno-fma', '-I.', '-std=c++17', '-o', 'compress', 'compressor-standalone.cpp'],
@@ -109,8 +114,10 @@ def run_gravel(crusherlocation, coeff_original, brick_original):
             for eachfolder in FOLDERS:                
                 # command = f'../LC-framework/lc ../bricklib/install/bin/brick/{eachfolder}/{eachexe} CR "" "RZE_1 CLOG_1"'
                 # This gives the best performance for now, choose this set to begin.
-                BEST_CHOOSEN_PREPROCESSOR=""
-                BEST_CHOOSEN_COMPONENT="RZE_1 CLOG_1"   # temporary value
+                #QUANT_ABS_R_f64(0.000001)" "NUL RZE_4
+
+                BEST_CHOOSEN_PREPROCESSOR="QUANT_ABS_R_f64(0.000001)"
+                BEST_CHOOSEN_COMPONENT="RZE_4"   # temporary value
                 #TODO: THIS SHOULD BE FROM install/
                 ORIGINAL_INPUT=f"{eachfolder}/{eachexe}"
                 COMPRESSED_INPUT= eachexe.replace("original", "compressed")
