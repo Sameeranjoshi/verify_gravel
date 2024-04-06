@@ -116,9 +116,9 @@ def run_gravel(crusherlocation, coeff_original, brick_original):
                 # This gives the best performance for now, choose this set to begin.
                 #QUANT_ABS_R_f64(0.000001)" "NUL RZE_4
 
-                BEST_CHOOSEN_PREPROCESSOR=""
-                #BEST_CHOOSEN_COMPONENT="RZE_4"   # temporary value ok for lossy fails for lossless.
-                BEST_CHOOSEN_COMPONENT="TUPL4_1 RRE_1 TUPL2_1 RLE_4"    # lossless parameteres
+                BEST_CHOOSEN_PREPROCESSOR="QUANT_ABS_0_f64(0.000001)"
+                BEST_CHOOSEN_COMPONENT="RZE_4"   # temporary value ok for lossy fails for lossless.
+                # BEST_CHOOSEN_COMPONENT="TUPL4_1 RRE_1 TUPL2_1 RLE_4"    # lossless parameteres
                 #TODO: THIS SHOULD BE FROM install/
                 ORIGINAL_INPUT=f"{eachfolder}/{eachexe}"
                 COMPRESSED_INPUT= eachexe.replace("original", "compressed")
