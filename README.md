@@ -20,8 +20,8 @@ ssh kp326
 
 # clone the repo
 git clone --recursive -j8 https://github.com/Sameeranjoshi/verify_gravel.git
-#If not already cloned.
-#git clone --recursive -j8 https://github.com/Sameeranjoshi/verify_gravel.git
+#If already cloned.
+#git submodule update --init --recursive
 cd verify_gravel/bricklib
 
 # build bricklib
