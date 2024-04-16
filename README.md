@@ -40,5 +40,11 @@ cd ../examples/external/build
 cmake ../ && make -j12 && cd ../../../
 
 # Run e2e pipeline
-./examples/external/build/example
+## Run single test
+./bricklib/examples/external/build/example
+
+## Run experiments e2e and generate excel.
+cd bricklib
+python3 run_and_generate_csv.py
+(check SDD_outputs.xlsx)
 ```
