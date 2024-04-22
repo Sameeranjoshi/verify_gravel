@@ -1,7 +1,7 @@
 # verify_gravel
 Verification of Compressed Bricks - class project for CS6110
 
-Read more in this [proposal](https://docs.google.com/document/d/1uZaDDlo5LlQEcIfZqqymmbaPRtcTG0j47xhOMQLZwlo/edit?usp=sharing) and [slides](https://docs.google.com/presentation/d/1a98UeDvrW7s5jxWdjcV4WV_5v_Rpp96wxW16cZ6gFFE/edit?usp=sharing) and detailed [report]().
+Read more in this [proposal](https://docs.google.com/document/d/1uZaDDlo5LlQEcIfZqqymmbaPRtcTG0j47xhOMQLZwlo/edit?usp=sharing) and [slides](https://docs.google.com/presentation/d/1a98UeDvrW7s5jxWdjcV4WV_5v_Rpp96wxW16cZ6gFFE/edit?usp=sharing) and detailed [report](https://github.com/Sameeranjoshi/verify_gravel/blob/main/FINAL_REPORT_6110.pdf).
 # Running instructions
 
 
